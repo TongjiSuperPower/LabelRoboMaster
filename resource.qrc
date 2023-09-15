@@ -11,6 +11,15 @@
         <file>resource/Bb.svg</file>
         <file>resource/Big.svg</file>
         <file>resource/Small.svg</file>
+        <file>resource/B4.svg</file>
+        <file>resource/B3.svg</file>
+        <file>resource/B5.svg</file>
+        <file>resource/R.svg</file>
+        <file>resource/anti-wind.svg</file>
+        <file>resource/arrow.svg</file>
+        <file>resource/bottom.svg</file>
+        <file>resource/entrance.svg</file>
+        <file>resource/top.svg</file>
     </qresource>
 
     <qresource prefix="/nn">

@@ -6,6 +6,8 @@
 #include <fstream>
 #include <QFile>
 
+QString tag_name[12];
+
 template<class F, class T, class ...Ts>
 T reduce(F &&func, T x, Ts ...xs) {
     if constexpr (sizeof...(Ts) > 0) {
@@ -68,15 +70,16 @@ SmartModel::SmartModel() {
         bin_file.open(QIODevice::ReadOnly);
         auto xml_bytes = xml_file.readAll();
         auto bin_bytes = bin_file.readAll();
-        net = cv::dnn::readNetFromModelOptimizer((uchar*)xml_bytes.data(), xml_bytes.size(), 
-                                                 (uchar*)bin_bytes.data(), bin_bytes.size());
+        net = cv::dnn::readNetFromModelOptimizer((uchar *) xml_bytes.data(), xml_bytes.size(),
+                                                 (uchar *) bin_bytes.data(), bin_bytes.size());
         cv::Mat input(640, 640, CV_8UC3);       // 构造输入数据
         auto x = cv::dnn::blobFromImage(input);
         net.setInput(x);
         net.forward();
         mode = "openvino-int8-cpu";     // 设置当前模型模式
         return;
-    } catch (cv::Exception &) {
+    } catch (cv::Exception &e) {
+        qDebug(e.what());
         // openvino int8 unavailable
     }
 
@@ -96,7 +99,8 @@ SmartModel::SmartModel() {
         net.setInput(x);
         net.forward();
         mode = "openvino-fp32-cpu"; // 设置当前模型模式
-    } catch (cv::Exception &) {
+    } catch (cv::Exception &e) {
+        qDebug(e.what());
         // 无法使用openvino运行fp32模型，则使用默认的opencv-dnn模式。
         net.setPreferableBackend(cv::dnn::DNN_BACKEND_DEFAULT);
         net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
@@ -109,14 +113,14 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
         // 加载图片，并等比例resize为640x640。空余部分用0进行填充。
         auto img = cv::imread(image_file.toStdString());
         float scale = 640.f / std::max(img.cols, img.rows);
-        cv::resize(img, img, {(int)round(img.cols * scale), (int)round(img.rows * scale)});
+        cv::resize(img, img, {(int) round(img.cols * scale), (int) round(img.rows * scale)});
         cv::Mat input(640, 640, CV_8UC3, 127);
         img.copyTo(input({0, 0, img.cols, img.rows}));
-        
+
         // TODO: 为了兼容int8模型和fp32模型的不同输入格式而加的临时操作
         //       后续会统一两个模型的输入格式
         cv::Mat x;
-        if(mode == "openvino-int8-cpu") {
+        if (mode == "openvino-int8-cpu") {
             x = cv::dnn::blobFromImage(input);
         } else {
             cv::cvtColor(input, input, cv::COLOR_BGR2RGB);

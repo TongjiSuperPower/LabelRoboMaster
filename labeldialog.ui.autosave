@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>LabelDialog</class>
+ <widget class="QDialog" name="LabelDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>382</width>
+    <height>131</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>12</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>类别修改</string>
+  </property>
+  <widget class="QComboBox" name="class_box">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>20</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <item>
+    <property name="text">
+     <string>哨兵</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>英雄</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>工程</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>3号步兵</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>4号步兵</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>5号步兵</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>前哨站</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>基地小装甲</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>基地大装甲</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>3号平衡</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>4号平衡</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>5号平衡</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="class_label">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>20</y>
+     <width>41</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>类别：</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="color_label">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>20</y>
+     <width>41</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>颜色：</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="color_box">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>20</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <item>
+    <property name="text">
+     <string>蓝色</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>红色</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>熄灭</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>紫色</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QPushButton" name="deleteButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>80</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>删除</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelButton">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>80</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>取消</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="saveButton">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>80</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>保存</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

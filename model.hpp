@@ -1,7 +1,3 @@
-//
-// Created by xinyang on 2021/4/28.
-//
-
 #ifndef _MODEL_HPP_
 #define _MODEL_HPP_
 
@@ -10,39 +6,24 @@
 #include <QString>
 #include <QPoint>
 #include <QPolygon>
+#include <QDebug>
 
-struct box_t {
-    QPointF pts[4];
-    int color_id = 0, tag_id = 0;
+extern QString tag_name[12];
+extern int last_color_id, last_tag_id;
+
+class box_t {
+public:
+    QPointF pts[5];
+    int color_id = last_color_id, tag_id = last_tag_id;
     float conf = -1;
 
     QString getName() const {
-        static const QString tag2name[] = {"G", "1", "2", "3", "4", "5", "O", "Bs", "Bb"};
-        static const QString color2name[] = {"B", "R", "N", "P"};
-        return color2name[color_id] + tag2name[tag_id];
+        return tag_name[tag_id];
     }
 
-    bool setByName(const QString &name) {
-        static const QMap<QString, int> name2tag = {{"G", 0},
-                                                    {"1", 1},
-                                                    {"2", 2},
-                                                    {"3", 3},
-                                                    {"4", 4},
-                                                    {"5", 5},
-                                                    {"O", 6},
-                                                    {"s", 7},
-                                                    {"b", 8}};
-        static const QMap<QString, int> name2color = {{"B", 0},
-                                                      {"R", 1},
-                                                      {"N", 2},
-                                                      {"P", 3}};
-        if (name2color.contains(name[0]) && name2tag.contains(name[1])) {
-            color_id = name2color[name[0]];
-            tag_id = name2tag[name[1]];
-            return true;
-        } else {
-            return false;
-        }
+    void set_class(const int color, const int tag) {
+        color_id = color;
+        tag_id = tag;
     }
 
     QPolygonF getStandardPloygon() const {

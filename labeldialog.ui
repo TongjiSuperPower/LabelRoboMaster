@@ -6,279 +6,209 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>200</height>
+    <width>382</width>
+    <height>131</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>12</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox">
+  <widget class="QComboBox" name="class_box">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>150</y>
-     <width>340</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="comboBox">
-   <property name="geometry">
-    <rect>
-     <x>140</x>
+     <x>230</x>
      <y>20</y>
-     <width>150</width>
-     <height>25</height>
+     <width>121</width>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
    </property>
    <item>
     <property name="text">
-     <string>BG</string>
+     <string>哨兵</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>B1</string>
+     <string>英雄</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>B2</string>
+     <string>工程</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>B3</string>
+     <string>3号步兵</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>B4</string>
+     <string>4号步兵</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>B5</string>
+     <string>5号步兵</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>BO</string>
+     <string>前哨站</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>Bs</string>
+     <string>基地小装甲</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>Bb</string>
+     <string>基地大装甲</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>RG</string>
+     <string>3号平衡</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>R1</string>
+     <string>4号平衡</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>R2</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>R3</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>R4</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>R5</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>RO</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Rs</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Rb</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>NG</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>N1</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>N2</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>N3</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>N4</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>N5</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>NO</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Ns</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Nb</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>PG</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>P1</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>P2</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>P3</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>P4</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>P5</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>PO</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Ps</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Pb</string>
+     <string>5号平衡</string>
     </property>
    </item>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="class_label">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>20</y>
+     <width>41</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>类别：</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="color_label">
    <property name="geometry">
     <rect>
      <x>30</x>
      <y>20</y>
-     <width>90</width>
-     <height>20</height>
+     <width>41</width>
+     <height>31</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
    <property name="text">
-    <string>current class:</string>
+    <string>颜色：</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="checkBox">
+  <widget class="QComboBox" name="color_box">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>20</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <item>
+    <property name="text">
+     <string>蓝色</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>红色</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>熄灭</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>紫色</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QPushButton" name="deleteButton">
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>70</y>
-     <width>90</width>
-     <height>25</height>
+     <y>80</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>删除</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelButton">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>80</y>
+     <width>81</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>delete</string>
+    <string>取消</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="saveButton">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>80</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>保存</string>
    </property>
   </widget>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>LabelDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>LabelDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

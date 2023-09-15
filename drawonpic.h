@@ -7,6 +7,16 @@
 #include <QMouseEvent>
 #include <QtSvg/QSvgRenderer>
 #include "model.hpp"
+#include "configure.hpp"
+
+#define NULL_IMG cv::Mat(0, 0, CV_8UC1)
+
+enum LabelMode{
+    Armor,
+    Wind,
+    Engineer,
+    Wind_Armor
+};
 
 class DrawOnPic : public QLabel {
 Q_OBJECT
@@ -16,9 +26,20 @@ public:
 
     QString model_mode() const { return model.get_mode(); }
 
+    QString current_file;
+
     void reset();
 
     QVector<box_t> &get_current_label();
+
+    void load_svg();
+
+    cv::Mat modified_img = NULL_IMG, enh_img = NULL_IMG;
+    bool image_equalizeHist = false;
+    bool image_enhanceV = false;
+    bool del_file = false;
+    LabelMode label_mode = Armor;
+    Configure configure;
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -29,9 +50,9 @@ protected:
 
     void mouseDoubleClickEvent(QMouseEvent *event);
 
-    void wheelEvent(QWheelEvent* event);
+    void wheelEvent(QWheelEvent *event);
 
-    void keyPressEvent(QKeyEvent* event);
+    void keyPressEvent(QKeyEvent *event);
 
     void paintEvent(QPaintEvent *event);
 
@@ -57,22 +78,35 @@ public slots:
 
     void stayPositionChanged(bool value);
 
+    void illuminate();
+
+    void histogram_Equalization();
+
+    void cover_brush();
+
 signals:
 
     void labelChanged(const QVector<box_t> &);
+
+    void delCurrentImage();
+
+    void update_list_name_signal(const LabelMode mode);
 
 private:
 
     void loadLabel();
 
-    void drawROI(QPainter& painter);
+    void update_cover(QPointF center);
+
+    void drawROI(QPainter &painter);
 
     QPointF *checkPoint();
 
-private:
-    QString current_file;
+    int label_to_size(int label, LabelMode mode);
 
-    QSvgRenderer standard_tag_render[9];
+private:
+
+    QSvgRenderer standard_tag_render[12];
 
     SmartModel model;
 
@@ -85,13 +119,19 @@ private:
     // int dx, dy;
     QImage *img = nullptr;
 
+    cv::Mat showing_modified_img;
+
     QPolygonF big_svg_ploygen, small_svg_ploygen;
     QPolygonF big_pts, small_pts;
 
     QVector<box_t> current_label;   // 归一化坐标
 
     QPointF *draging = nullptr;
+    int cover_radius = 10;
     int focus_box_index = -1;
+    int focus_point_index = -1;
+    int banned_point_index = -1;
+    bool F_mode = false;
     QVector<QPointF> adding;
     QPointF pos;
 
@@ -110,6 +150,7 @@ private:
     enum mode_t {
         NORMAL_MODE,
         ADDING_MODE,
+        COVER_MODE,
     } mode = NORMAL_MODE;
 };
 

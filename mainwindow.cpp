@@ -1,8 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <iostream>
 #include <QFileDialog>
 #include <QCoreApplication>
-#include <iostream>
 #include <QMessageBox>
 
 class IndexQListWidgetItem : public QListWidgetItem {
@@ -12,29 +12,87 @@ public:
     }
 
     int getIndex() const { return index; }
+    void setIndex(const int value) { this->index = value; }
 
 private:
     int index;
 };
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent, std::string path, int init_mode) :
         QMainWindow(parent),
         ui(new Ui::MainWindow) {
     ui->setupUi(this);
+    cdialog = new Configuredialog(&ui->label->configure, this);
     QObject::connect(ui->addLabelPushButton, &QPushButton::clicked, ui->label, &DrawOnPic::setAddingMode);
     QObject::connect(ui->savePushButton, &QPushButton::clicked, ui->label, &DrawOnPic::saveLabel);
     QObject::connect(ui->stayPositionCheckBox, &QCheckBox::toggled, ui->label, &DrawOnPic::stayPositionChanged);
-    ui->labelOpenvino->setText(ui->label->model_mode());  // 获取当前模型模式，并显示在窗口左下角
+    QObject::connect(ui->illuminateButton, &QPushButton::clicked, ui->label, &DrawOnPic::illuminate);
+    QObject::connect(ui->histogramEqualizationButton, &QPushButton::clicked, ui->label, &DrawOnPic::histogram_Equalization);
+    QObject::connect(ui->coverBrushButton, &QPushButton::clicked, ui->label, &DrawOnPic::cover_brush);
+    QObject::connect(ui->label, &DrawOnPic::update_list_name_signal, [=](){update_list_name(ui->label->label_mode);});
+    QObject::connect(ui->configurePushButton, &QPushButton::clicked, [=](){cdialog->show_configure();});
+    QObject::connect(ui->label, &DrawOnPic::delCurrentImage, [=]() {
+        ui->label->enh_img = NULL_IMG;
+        ui->label->modified_img = NULL_IMG;
+        ui->label->image_enhanceV = ui->label->image_equalizeHist = false;
+        auto currentRow = ui->fileListWidget->currentRow();
+        auto count =  ui->fileListWidget->count();
+        for (int i = currentRow + 1; i < count; i++) {
+            auto current = static_cast<IndexQListWidgetItem *>(ui->fileListWidget->item(i));
+            current->setIndex(current->getIndex()-1);
+        } 
+        ui->fileListWidget->removeItemWidget(ui->fileListWidget->takeItem(currentRow));
+        ui->fileListHorizontalSlider->setMaximum(ui->fileListWidget->count());
+    });
+    ui->label->label_mode = LabelMode(ui->label->configure.last_mode);
+    ui->labelOpenvino->setText(ui->label->model_mode()); // 获取当前模型模式，并显示在窗口左下角
+    ui->autoSaveCheckBox->setCheckState(Qt::Checked);
+    ui->modeComboBox->setCurrentIndex(init_mode);
+    ui->autoEnhanceVCheckBox->setCheckState(ui->label->configure.auto_enhance_V ? Qt::Checked : Qt::Unchecked);
+    update_list_name(ui->label->label_mode);
+    bool last_flag = false;
+    if(path == ""){
+        path = ui->label->configure.last_open.toStdString();
+        last_flag = true;
+    }
+    if(path != "" && path != "."){
+        std::string tfile = "";
+        int file_index = 1;
+        if (QFileInfo(QString::fromStdString(path)).isFile()) {
+            tfile = path.substr(path.find_last_of('/') + 1);
+            path = path.substr(0, path.find_last_of('/'));
+        }
+        QDir dir(QString::fromStdString(path));
+        ui->label->reset();     // 重置绘图控件
+        QStringList image_filter = {"*.jpg", "*.png", "*.jpeg"};    // 支持的图像格式
+        ui->fileListWidget->clear();    // 清空文件列表
+        int idx = 0;
+        // 遍历文件夹下的图片，并添加到文件列表
+        for (QString file: dir.entryList(image_filter)) {
+            if (file == "." || file == "..") continue;
+            ui->fileListWidget->addItem(new IndexQListWidgetItem(dir.absoluteFilePath(file), idx++));
+            if (tfile == file.toStdString())
+                file_index = idx;
+        }
+        ui->fileListWidget->setCurrentItem(ui->fileListWidget->item(0));
+        // 设置拖动条
+        ui->fileListHorizontalSlider->setMinimum(1);
+        ui->fileListHorizontalSlider->setMaximum(ui->fileListWidget->count());
+        ui->fileListHorizontalSlider->setValue(last_flag ? ui->label->configure.last_pic : file_index);
+    }
 }
 
 MainWindow::~MainWindow() {
+    ui->label->configure.last_pic = ui->fileListHorizontalSlider->value();
+    delete cdialog;
     delete ui;
 }
 
 void MainWindow::on_openDirectoryPushButton_clicked() {
     ui->label->reset();     // 重置绘图控件
     QStringList image_filter = {"*.jpg", "*.png", "*.jpeg"};    // 支持的图像格式
-    QDir dir = QFileDialog::getExistingDirectory(this, "", ".", QFileDialog::ShowDirsOnly);
+    QDir dir;
+    dir = QFileDialog::getExistingDirectory(this, "", ui->label->configure.last_open, QFileDialog::ShowDirsOnly);
     ui->fileListWidget->clear();    // 清空文件列表
     int idx = 0;
     // 遍历文件夹下的图片，并添加到文件列表
@@ -47,6 +105,7 @@ void MainWindow::on_openDirectoryPushButton_clicked() {
     ui->fileListHorizontalSlider->setMinimum(1);
     ui->fileListHorizontalSlider->setMaximum(ui->fileListWidget->count());
     ui->fileListHorizontalSlider->setValue(1);
+    ui->label->configure.last_open = dir.path();
 }
 
 void MainWindow::on_fileListWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous) {
@@ -61,9 +120,13 @@ void MainWindow::on_fileListWidget_currentItemChanged(QListWidgetItem *current, 
 void MainWindow::on_label_labelChanged(const QVector<box_t> &labels) {
     // 当添加/删除/修改当前图片的label时，重置右上角的标签列表
     // TODO: 可以有性能优化
+    IndexQListWidgetItem *tilwi;
+    static const QColor color_list[] = {Qt::blue, Qt::red, Qt::green, Qt::darkMagenta};
     ui->labelListWidget->clear();
     for (int i = 0; i < labels.size(); i++) {
-        ui->labelListWidget->addItem(new IndexQListWidgetItem(labels[i].getName(), i));
+        tilwi = new IndexQListWidgetItem(labels[i].getName(), i);
+        tilwi->setForeground(color_list[labels[i].color_id]);
+        ui->labelListWidget->addItem(tilwi);
     }
 }
 
@@ -71,7 +134,7 @@ void MainWindow::on_labelListWidget_itemDoubleClicked(QListWidgetItem *item) {
     // 双击打开label设置窗口（修改label类别/删除label）
     int idx = static_cast<IndexQListWidgetItem *>(item)->getIndex();
     delete dialog;
-    dialog = new LabelDialog(ui->label->get_current_label().begin() + idx);
+    dialog = new LabelDialog(ui->label->get_current_label().begin() + idx, ui->label->label_mode);
     dialog->setModal(true);
     QObject::connect(dialog, &LabelDialog::removeBoxEvent, ui->label, &DrawOnPic::removeBox);
     QObject::connect(dialog, &LabelDialog::changeBoxEvent, ui->label, &DrawOnPic::updateBox);
@@ -90,6 +153,7 @@ void MainWindow::on_smartPushButton_clicked() {
     ui->label->smart();
 }
 
+/*
 void MainWindow::on_smartAllPushButton_clicked() {
     // 遍历所有目标，依次进行自动标注
     // TODO: 目前无法中断该过程
@@ -101,6 +165,7 @@ void MainWindow::on_smartAllPushButton_clicked() {
         QCoreApplication::processEvents();
     }
 }
+*/
 
 void MainWindow::on_nextPushButton_clicked() {
     // 切换图片时，判断是否需要自动保存
@@ -127,15 +192,26 @@ void MainWindow::on_prevPushButton_clicked() {
 
 void MainWindow::on_fileListHorizontalSlider_valueChanged(int value) {
     // 响应文件列表拖动条
-    QString text;
-    ui->fileListLabel->setText(text.sprintf("[%d/%d]", value, ui->fileListHorizontalSlider->maximum()));
+    ui->fileListLabel->setText(QString::asprintf("[%d/%d]", value, ui->fileListHorizontalSlider->maximum()));
     ui->fileListWidget->setCurrentItem(ui->fileListWidget->item(value - 1));
+    if(ui->label->configure.auto_enhance_V)
+        ui->label->illuminate();
+    else{
+        ui->label->enh_img = NULL_IMG;
+        ui->label->modified_img = NULL_IMG;
+        ui->label->image_enhanceV = ui->label->image_equalizeHist = false;
+    }
 }
 
 void MainWindow::on_fileListHorizontalSlider_rangeChanged(int min, int max) {
     // 响应文件列表拖动条
-    QString text;
-    ui->fileListLabel->setText(text.sprintf("[%d/%d]", ui->fileListHorizontalSlider->value(), max));
+    ui->fileListLabel->setText(QString::asprintf("[%d/%d]", ui->fileListHorizontalSlider->value(), max));
+}
+
+void MainWindow::on_modeComboBox_currentIndexChanged(int i){
+    ui->label->label_mode = LabelMode(i);
+    ui->label->load_svg();
+    ui->label->configure.last_mode = i;
 }
 
 void MainWindow::on_interpolateButton_clicked() {
@@ -199,4 +275,18 @@ void MainWindow::on_upLabelButton_clicked() {
 void MainWindow::on_downLabelButton_clicked() {
     int next_idx = ui->labelListWidget->currentRow() + 1;
     ui->labelListWidget->setCurrentRow(next_idx < ui->labelListWidget->count() ? next_idx : 0);
+}
+
+void MainWindow::on_delImageButton_clicked() {
+    remove(ui->label->current_file.toStdString().c_str());
+    remove(ui->label->current_file.replace(".jpg", ".txt").toStdString().c_str());
+    ui->label->del_file = false;
+}
+
+void MainWindow::on_autoEnhanceVCheckBox_stateChanged(int check) {
+    if(check != 1){
+        ui->label->configure.auto_enhance_V = check > 0;
+        if(check == 2 && !ui->label->image_enhanceV || check == 0 && ui->label->image_enhanceV)
+            ui->label->illuminate();
+    }
 }
