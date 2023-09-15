@@ -402,12 +402,12 @@ https://mirrors.tuna.tsinghua.edu.cn/qt  # 使用清华源安装
 ![QT-type](pic/QT-components.png)
 
 ### **opencv安装**
-详见视觉群文件
+请自行安装
 
 ### **其它依赖库安装**
 QT的编译依赖 OpenGL 库，需⼿动安装，打开终端，键⼊:
 ```s
-sudo a方法pt install libgl1-mesa-dev
+sudo apt install libgl1-mesa-dev
 sudo apt install libglu1-mesa-dev freeglut3-dev
 ```
 同时，编译需要 git cmake build-essential 等库，打开终端，键⼊:
@@ -418,7 +418,7 @@ sudo apt install git vim cmake-qt-gui build-essential
 ### **下载源码编译**
 1. 在合适的安装⽬录下(⽐如 ~)下打开终端，键⼊:
 ```s
-git clone https://gitea.terase.cn/jp/LabelMaster.git
+git clone https://github.com/MonthMoonBird/LabelRoboMaster.git
 ```
 2. 打开 CMakeLists.txt ， 模仿图中在第8行添加 Cmake 设置:
 ```s
