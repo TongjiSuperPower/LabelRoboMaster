@@ -15,6 +15,20 @@
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
 
+const std::vector<std::tuple<int, int>> armor_properties = {
+    {0, 0}, {1, 0}, {2, 0},
+    {0, 1}, {1, 1}, {2, 1},
+    {0, 2}, {1, 2}, {2, 2},
+    {0, 3}, {1, 3}, {2, 3},
+    {0, 4}, {1, 4}, {2, 4},
+    {0, 5}, {1, 5}, {2, 5},
+    {0, 6}, {1, 6}, {2, 6},
+    {0, 7}, {1, 7}, {2, 7}, {3, 7},       
+    {0, 8}, {1, 8}, {2, 8}, {3, 8},    
+    {0, 9}, {1, 9}, {2, 9}, 
+    {0, 10}, {1, 10}, {2, 10},  
+    {0, 11}, {1, 11}, {2, 11}};
+
 DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
     pen_point_focus.setWidth(5);
     pen_point_focus.setColor(Qt::green);
@@ -700,10 +714,20 @@ void DrawOnPic::loadLabel() {
             QTextStream stream(&fp);
             while (true) {
                 box_t label;
-                int tag;
-                for(short p = 0; p < 4 + (label_mode == Wind); ++p)
+                int target_id;
+                stream >> target_id;
+                label.color_id = std::get<0>(armor_properties[target_id]);
+                label.tag_id = std::get<1>(armor_properties[target_id]);
+
+                // skip the xywh of bbox
+                QString skipped_data;
+                for(int i = 0; i < 4; ++i) {
+                    stream >> skipped_data;
+                }
+
+                for(short p = 0; p < 4 + (label_mode == Wind); ++p) {
                     stream >> label.pts[p].rx() >> label.pts[p].ry();
-                stream >> label.tag_id >> label.color_id;
+                }
                 if (stream.atEnd()) break;
                 current_label.append(label);
             }
@@ -725,10 +749,36 @@ void DrawOnPic::saveLabel() {
     }
     if (fp.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
         QTextStream stream(&fp);
+        int target_id;
+        qreal x, y, w, h;
         for (const box_t &box: current_label) {
-            for (short p = 0; p < 4 + (label_mode == Wind); ++p)
+            // 转换id
+            if(box.tag_id <= 7) target_id = box.tag_id*3 + box.color_id;
+            else if(box.tag_id==8) target_id = box.tag_id*3 + 1 + box.color_id;
+            else target_id = box.tag_id*3 + 2 + box.color_id;
+            stream << target_id << " ";
+
+            // calculate xywh of bbox
+            QVector<qreal> x_coords;
+            QVector<qreal> y_coords;
+            for (short p = 0; p < 4 + (label_mode == Wind); ++p) {
+                x_coords.append(box.pts[p].x());
+                y_coords.append(box.pts[p].y());
+            }
+            qreal x_max = *std::max_element(std::begin(x_coords), std::end(x_coords));
+            qreal y_max = *std::max_element(std::begin(y_coords), std::end(y_coords));
+            qreal x_min = *std::min_element(std::begin(x_coords), std::end(x_coords));
+            qreal y_min = *std::min_element(std::begin(y_coords), std::end(y_coords));
+            x = (x_min + x_max)/2;
+            y = (y_min + y_max)/2;
+            w = x_max - x_min;
+            h = y_max - y_min;
+            stream << x << " " << y << " " << w << " " << h << " ";
+
+            for (short p = 0; p < 4 + (label_mode == Wind); ++p) {
                 stream << box.pts[p].x() << " " << box.pts[p].y() << " ";
-            stream << box.tag_id << " " << box.color_id << endl;
+            }
+            stream << endl;
         }
         if (modified_img.rows)
             cv::imwrite(image_file.absoluteFilePath().toLocal8Bit().toStdString(), modified_img);
