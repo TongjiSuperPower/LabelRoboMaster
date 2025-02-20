@@ -7,7 +7,7 @@
 ```
 <目标id> [bbox的xywh] [目标各点的x、y归一化坐标]
 ```
-具体使用方法，请参考 [使用教程](https://github.com/xinyang-go/LabelRoboMaster/blob/main/README.md)。
+具体使用方法，请参考 [使用教程](https://github.com/MonthMoonBird/LabelRoboMaster/blob/main/README.md)。
 
 ## 感谢
 
