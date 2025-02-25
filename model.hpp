@@ -8,6 +8,7 @@
 #include <QPolygon>
 #include <QDebug>
 
+#include <openvino/openvino.hpp>
 extern QString tag_name[12];
 extern int last_color_id, last_tag_id;
 
@@ -45,8 +46,11 @@ public:
     QString get_mode() const { return mode; }
 
 private:
+    std::string device_;
     cv::dnn::Net net;
     QString mode;
+    ov::Core core_;
+    ov::CompiledModel compiled_model_;
 };
 
 #endif /* _MODEL_HPP_ */
