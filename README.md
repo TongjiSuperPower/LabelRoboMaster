@@ -36,11 +36,12 @@ https://mirrors.tuna.tsinghua.edu.cn/qt  # 使用清华源安装
 ![QT-type](pic/QT-components.png) 
 如果如下图所示如果没有5.15.2版本，请勾选右侧"Archive"，再点击"Filter"按钮，即可找到Qt  5.15.2  
 ![QT-type](pic/QT-5.15.2.png)
-如果如下图所示出现报错，按照要求输入即可 
+如果如下图所示出现报错  
+![QT-type](pic/QT-notFound.png)  
+按照要求输入即可
 ```s
 sudo apt install libxcb-cursor0 libxcb-cursor-dev
-``` 
-![QT-type](pic/QT-notFound.png)
+```  
 ### **opencv安装**
 请自行安装
 
