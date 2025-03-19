@@ -724,11 +724,10 @@ void DrawOnPic::loadLabel() {
                 for(int i = 0; i < 4; ++i) {
                     stream >> skipped_data;
                 }
-
                 for(short p = 0; p < 4 + (label_mode == Wind); ++p) {
                     stream >> label.pts[p].rx() >> label.pts[p].ry();
                 }
-                if (stream.atEnd()) break;
+                if(label.pts[0].rx() ==0 && label.pts[0].ry()==0) break;
                 current_label.append(label);
             }
         }

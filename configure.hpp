@@ -12,7 +12,7 @@ public:
     QString last_open = ".";
     int last_pic = 1;
     int last_mode = 0;
-    short auto_enhance_V = 1;
+    short auto_enhance_V = 0;
 };
 
 #endif CONFIGURE_HPP
