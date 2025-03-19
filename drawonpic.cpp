@@ -740,12 +740,12 @@ void DrawOnPic::saveLabel() {
     QFileInfo image_file = current_file;
     QFileInfo label_file = image_file.absoluteFilePath().replace(image_file.suffix(), "txt");
     QFile fp(label_file.absoluteFilePath());
-    if (current_label.empty()) {
+    // if (current_label.empty()) {
         // 如果当前图片没有任何目标，则删除标签文件。
         // 主要避免之前保存过有目标的文件。
-        fp.remove();
-        return;
-    }
+        // fp.remove();
+        // return;
+    // }
     if (fp.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
         QTextStream stream(&fp);
         int target_id;
