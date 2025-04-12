@@ -41,7 +41,7 @@ class SmartModel {
 public:
     explicit SmartModel();
 
-    bool run(const QString &image_file, QVector<box_t> &boxes);
+    bool run(const QString &image_file, QVector<box_t> &boxes, bool use_roi=false);
 
     QString get_mode() const { return mode; }
 

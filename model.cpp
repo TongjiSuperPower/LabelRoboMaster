@@ -133,11 +133,36 @@ SmartModel::SmartModel() {
     }
 }
 
-bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
+bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes, bool use_roi) {
     try {
-        // 加载图片，并等比例resize为640x640。空余部分用0进行填充。
+        // 加载图片
         auto bgr_img = cv::imread(image_file.toStdString());
-        
+        cv::Rect roi;
+        if(use_roi) {
+            int max_x = INT_MIN, max_y = INT_MIN, min_x = INT_MAX, min_y = INT_MAX;
+
+            for (const auto& pt : boxes[0].pts) {
+                int x = pt.x();
+                int y = pt.y();
+            
+                max_x = std::max(max_x, x);
+                max_y = std::max(max_y, y);
+                min_x = std::min(min_x, x);
+                min_y = std::min(min_y, y);
+            }
+
+            int height = max_y - min_y;
+            int width = max_x - min_x;
+
+            cv::Rect full_image(0, 0, bgr_img.cols, bgr_img.rows);
+            // 以装甲板四点的外接矩形为中心 宽高为其两倍
+            roi = cv::Rect(min_x-width/2, min_y-height/2, width*2, height*2);
+            roi = roi & full_image; // 取交集以避免越界
+
+            bgr_img = bgr_img(roi);
+        }
+
+        // 等比例resize为640x640。空余部分用0进行填充。
         auto x_scale = static_cast<double>(640) / bgr_img.rows;
         auto y_scale = static_cast<double>(640) / bgr_img.cols;
         auto scale = std::min(x_scale, y_scale);
@@ -146,8 +171,8 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
 
         // preproces
         auto input = cv::Mat(640, 640, CV_8UC3, cv::Scalar(0, 0, 0));
-        auto roi = cv::Rect(0, 0, w, h);
-        cv::resize(bgr_img, input(roi), {w, h});
+        auto padding_roi = cv::Rect(0, 0, w, h);
+        cv::resize(bgr_img, input(padding_roi), {w, h});
         ov::Tensor input_tensor(ov::element::u8, {1, 640, 640, 3}, input.data);
 
         /// infer
@@ -193,6 +218,10 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
                 float y = one_key_points.at<float>(0, i * 2 + 1) / scale;
                 box.pts[i].rx() = x;
                 box.pts[i].ry() = y;
+                if (use_roi) {
+                    box.pts[i].rx() += roi.x;
+                    box.pts[i].ry() += roi.y;
+                }
             }
             box.color_id = std::get<0>(armor_properties[max_point.x]);
             box.tag_id = std::get<1>(armor_properties[max_point.x]);
@@ -211,7 +240,16 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
             else continue;
         }
 
-        return true;
+        bool res = true;
+        // if(!use_roi) {
+        //     for (size_t i=0; i<boxes.size(); i++) {
+        //         QVector<box_t> tmp = {boxes[i]};
+        //         res = run(image_file, tmp, true);
+        //         boxes[i] = tmp[0];
+        //     }
+        //     return true;
+        // } else 
+        return res;
     } catch (std::exception &e) {
         std::ofstream ofs("warning.txt", std::ios::app);
         time_t t;
