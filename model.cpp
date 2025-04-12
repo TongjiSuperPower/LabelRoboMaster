@@ -141,7 +141,8 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes, bool use_
         if(use_roi) {
             int max_x = INT_MIN, max_y = INT_MIN, min_x = INT_MAX, min_y = INT_MAX;
 
-            for (const auto& pt : boxes[0].pts) {
+            for (int i=0; i<4; i++) {
+                auto pt = boxes[0].pts[i];
                 int x = pt.x();
                 int y = pt.y();
             
@@ -155,8 +156,7 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes, bool use_
             int width = max_x - min_x;
 
             cv::Rect full_image(0, 0, bgr_img.cols, bgr_img.rows);
-            // 以装甲板四点的外接矩形为中心 宽高为其两倍
-            roi = cv::Rect(min_x-width/2, min_y-height/2, width*2, height*2);
+            roi = cv::Rect(min_x-width, min_y-height*4, width*3, height*9);
             roi = roi & full_image; // 取交集以避免越界
 
             bgr_img = bgr_img(roi);
@@ -241,14 +241,15 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes, bool use_
         }
 
         bool res = true;
-        // if(!use_roi) {
-        //     for (size_t i=0; i<boxes.size(); i++) {
-        //         QVector<box_t> tmp = {boxes[i]};
-        //         res = run(image_file, tmp, true);
-        //         boxes[i] = tmp[0];
-        //     }
-        //     return true;
-        // } else 
+        if(!use_roi) {
+            for (size_t i=0; i<boxes.size(); i++) {
+                QVector<box_t> tmp = {boxes[i]};
+                res = run(image_file, tmp, true);
+                if(!tmp.empty()) boxes[i] = tmp[0];
+                else continue;
+            }
+            return true;
+        } else 
         return res;
     } catch (std::exception &e) {
         std::ofstream ofs("warning.txt", std::ios::app);
