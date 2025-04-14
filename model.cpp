@@ -156,8 +156,9 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes, bool use_
             int width = max_x - min_x;
 
             cv::Rect full_image(0, 0, bgr_img.cols, bgr_img.rows);
-            roi = cv::Rect(min_x-width, min_y-height*4, width*3, height*9);
+            roi = cv::Rect(min_x-width, min_y-height*1, width*3, height*4);
             roi = roi & full_image; // 取交集以避免越界
+            // std::cout << "x: " << roi.x << "  y: " << roi.y << "  w: " << roi.width << "  h: " << roi.height << std::endl;
 
             bgr_img = bgr_img(roi);
         }
