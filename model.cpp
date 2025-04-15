@@ -246,7 +246,11 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes, bool use_
             for (size_t i=0; i<boxes.size(); i++) {
                 QVector<box_t> tmp = {boxes[i]};
                 res = run(image_file, tmp, true);
-                if(!tmp.empty()) boxes[i] = tmp[0];
+                if(!tmp.empty()) {
+                    for(auto box:tmp) {
+                        if(box.getName()==boxes[i].getName()) boxes[i] = box;
+                    }
+                }
                 else continue;
             }
             return true;
